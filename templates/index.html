@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transcript Analyzer Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #9ca3af;
+            --card-bg: #ffffff;
+            --gradient-start: #6366f1;
+            --gradient-end: #8b5cf6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            animation: fadeIn 1s ease;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+            font-weight: 600;
+            font-size: 1.3rem;
+        }
+
+        .card-title i {
+            font-size: 1.5rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 250px;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            resize: vertical;
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result-card {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .result-item {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .result-title {
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sentiment {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .positive {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .neutral {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .negative {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e5e7eb;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .transcript-preview {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.5;
+            border: 1px solid #e5e7eb;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            flex: 1;
+            background: linear-gradient(135deg, #f8fafc, #e5e7eb);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        .sentiment-score {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .score-bar {
+            flex-grow: 1;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .score-positive {
+            background: var(--secondary);
+        }
+
+        .score-negative {
+            background: var(--danger);
+        }
+
+        .score-neutral {
+            background: #f59e0b;
+        }
+
+        .confidence {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-headset"></i>
+            </div>
+            <h1>Transcript Analyzer Pro</h1>
+            <p class="subtitle">Analyze customer call transcripts with AI-powered sentiment analysis and summarization
+            </p>
+        </header>
+
+        <div class="main-content">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-file-alt"></i>
+                    <h2>Input Transcript</h2>
+                </div>
+                <textarea id="transcript" placeholder="Paste customer call transcript here..."></textarea>
+
+                <button class="btn pulse" id="analyzeBtn">
+                    <i class="fas fa-robot"></i>
+                    Analyze Transcript
+                </button>
+
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-label">Words</div>
+                        <div class="stat-value" id="wordCount">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Characters</div>
+                        <div class="stat-value" id="charCount">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Lines</div>
+                        <div class="stat-value" id="lineCount">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card result-card">
+                <div class="card-title">
+                    <i class="fas fa-chart-line"></i>
+                    <h2>Analysis Results</h2>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing transcript with AI...</p>
+                </div>
+
+                <div id="results">
+                    <div class="result-item">
+                        <div class="result-title">
+                            <i class="fas fa-comment"></i>
+                            <h3>Summary</h3>
+                        </div>
+                        <div id="summary">Analysis results will appear here after processing.</div>
+                    </div>
+
+                    <div class="result-item">
+                        <div class="result-title">
+                            <i class="fas fa-heart"></i>
+                            <h3>Sentiment</h3>
+                        </div>
+                        <div id="sentimentResult">
+                            <span class="sentiment neutral" id="sentiment">Neutral</span>
+                            <div class="sentiment-score">
+                                <div class="score-bar">
+                                    <div class="score-fill score-neutral" id="sentimentBar" style="width: 50%"></div>
+                                </div>
+                                <div class="confidence" id="confidence">50% confidence</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-item">
+                        <div class="result-title">
+                            <i class="fas fa-file-alt"></i>
+                            <h3>Original Transcript Preview</h3>
+                        </div>
+                        <div class="transcript-preview" id="originalTranscript">
+                            Transcript will appear here...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Powered by Groq AI • Transcripts are saved to CSV for further analysis</p>
+            <p>© 2023 Transcript Analyzer Pro</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const transcriptTextarea = document.getElementById('transcript');
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const loadingElement = document.getElementById('loading');
+            const resultsElement = document.getElementById('results');
+            const summaryElement = document.getElementById('summary');
+            const sentimentElement = document.getElementById('sentiment');
+            const sentimentBarElement = document.getElementById('sentimentBar');
+            const confidenceElement = document.getElementById('confidence');
+            const originalTranscriptElement = document.getElementById('originalTranscript');
+            const wordCountElement = document.getElementById('wordCount');
+            const charCountElement = document.getElementById('charCount');
+            const lineCountElement = document.getElementById('lineCount');
+
+            // Update character and word count
+            function updateCounts() {
+                const text = transcriptTextarea.value;
+                charCountElement.textContent = text.length;
+                wordCountElement.textContent = text.trim() ? text.trim().split(/\s+/).length : 0;
+                lineCountElement.textContent = text.trim() ? text.split('\n').length : 0;
+            }
+
+            transcriptTextarea.addEventListener('input', updateCounts);
+            updateCounts();
+
+            // Analyze button click handler
+            analyzeBtn.addEventListener('click', function () {
+                const transcript = transcriptTextarea.value.trim();
+
+                if (!transcript) {
+                    alert('Please enter a transcript to analyze');
+                    return;
+                }
+
+                // Show loading, hide results
+                loadingElement.style.display = 'block';
+                resultsElement.style.opacity = '0.3';
+
+                // Call backend API instead of simulating
+                fetch("/analyze", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: new URLSearchParams({ transcript })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            alert("Error: " + data.error);
+                            return;
+                        }
+
+                        summaryElement.textContent = data.summary;
+                        sentimentElement.textContent = data.sentiment.charAt(0).toUpperCase() + data.sentiment.slice(1);
+                        sentimentElement.className = 'sentiment ' + data.sentiment;
+
+                        // Map sentiment → confidence bar %
+                        let confidence = 70;
+                        if (data.sentiment === "positive") confidence = 90;
+                        if (data.sentiment === "negative") confidence = 85;
+
+                        sentimentBarElement.className = 'score-fill score-' + data.sentiment;
+                        sentimentBarElement.style.width = confidence + "%";
+                        confidenceElement.textContent = confidence + "% confidence";
+
+                        const truncatedTranscript = transcript.length > 300 ? transcript.substring(0, 300) + "..." : transcript;
+                        originalTranscriptElement.textContent = truncatedTranscript;
+
+                        loadingElement.style.display = "none";
+                        resultsElement.style.opacity = "1";
+
+                        document.querySelectorAll(".result-item").forEach(item => {
+                            item.classList.add("fade-in");
+                        });
+                    })
+                    .catch(err => {
+                        alert("Error calling backend: " + err);
+                        loadingElement.style.display = "none";
+                        resultsElement.style.opacity = "1";
+                    });
+
+
+                // Function to analyze transcript content and generate dynamic results
+                function analyzeTranscript(transcript) {
+                    const text = transcript.toLowerCase();
+
+                    // Calculate sentiment score based on keywords and context
+                    let sentimentScore = 0;
+                    let positiveWords = 0;
+                    let negativeWords = 0;
+                    let totalWords = text.split(/\s+/).length || 1; // Avoid division by zero
+
+                    // Positive indicators
+                    const positiveIndicators = [
+                        'thank', 'thanks', 'appreciate', 'great', 'good', 'excellent', 'wonderful',
+                        'awesome', 'fantastic', 'perfect', 'happy', 'pleased', 'satisfied', 'love',
+                        'helpful', 'kind', 'patient', 'impressed', 'recommend', 'amazing', 'superb',
+                        'outstanding', 'brilliant', 'quick', 'fast', 'efficient', 'responsive'
+                    ];
+
+                    // Negative indicators
+                    const negativeIndicators = [
+                        'angry', 'mad', 'frustrated', 'upset', 'disappointed', 'terrible', 'horrible',
+                        'awful', 'bad', 'poor', 'unacceptable', 'ridiculous', 'useless', 'worthless',
+                        'waste', 'hate', 'dislike', 'problem', 'issues', 'error', 'mistake', 'wrong',
+                        'broken', 'failed', 'late', 'delay', 'wait', 'complain', 'refund', 'cancel'
+                    ];
+
+                    // Count positive and negative words
+                    positiveIndicators.forEach(word => {
+                        const regex = new RegExp('\\b' + word + '\\b', 'gi');
+                        const matches = text.match(regex);
+                        if (matches) positiveWords += matches.length;
+                    });
+
+                    negativeIndicators.forEach(word => {
+                        const regex = new RegExp('\\b' + word + '\\b', 'gi');
+                        const matches = text.match(regex);
+                        if (matches) negativeWords += matches.length;
+                    });
+
+                    // Calculate sentiment score (-100 to +100)
+                    sentimentScore = Math.round(((positiveWords - negativeWords) / totalWords) * 100);
+                    sentimentScore = Math.max(-100, Math.min(100, sentimentScore)); // Clamp between -100 and 100
+
+                    // Determine sentiment category
+                    let sentiment, confidence;
+                    if (sentimentScore > 20) {
+                        sentiment = "positive";
+                        confidence = 50 + Math.round(sentimentScore / 2);
+                    } else if (sentimentScore < -20) {
+                        sentiment = "negative";
+                        confidence = 50 + Math.round(Math.abs(sentimentScore) / 2);
+                    } else {
+                        sentiment = "neutral";
+                        confidence = 50 + Math.round((20 - Math.abs(sentimentScore)) * 1.5);
+                    }
+
+                    confidence = Math.min(95, confidence); // Cap confidence at 95%
+
+                    // Generate context-aware summary
+                    const summary = generateSummary(transcript, sentiment, sentimentScore);
+
+                    return {
+                        summary,
+                        sentiment,
+                        confidence
+                    };
+                }
+
+                // Function to generate a dynamic summary based on content
+                function generateSummary(transcript, sentiment, sentimentScore) {
+                    const text = transcript.toLowerCase();
+
+                    // Extract key elements from the conversation
+                    const hasGreeting = /hello|hi|hey|good morning|good afternoon/i.test(text);
+                    const hasFarewell = /bye|goodbye|thank you|thanks|have a (good|nice)/i.test(text);
+                    const hasQuestions = /\?/.test(transcript);
+
+                    // Determine conversation topics
+                    const topics = [];
+                    if (/(internet|wifi|router|connection|speed)/i.test(text)) topics.push("internet service");
+                    if (/(bill|payment|charge|fee|price|cost)/i.test(text)) topics.push("billing");
+                    if (/(technical|tech support|problem|issue|error|fix)/i.test(text)) topics.push("technical support");
+                    if (/(account|login|password|sign in)/i.test(text)) topics.push("account access");
+                    if (/(delivery|ship|shipping|arrive|receive)/i.test(text)) topics.push("delivery");
+
+                    // Generate summary based on sentiment and content
+                    let summary = "";
+
+                    if (sentiment === "positive") {
+                        summary = "The customer expressed satisfaction with the service received. ";
+                        if (text.includes("technician") || text.includes("agent") || text.includes("representative")) {
+                            summary += "They specifically praised the staff member for their assistance. ";
+                        }
+                        if (topics.length > 0) {
+                            summary += `The conversation primarily focused on ${topics.join(" and ")}. `;
+                        }
+                        summary += "The customer indicated they would continue using the service and might recommend it to others.";
+                    }
+                    else if (sentiment === "negative") {
+                        summary = "The customer expressed dissatisfaction with their experience. ";
+                        if (text.includes("wait") || text.includes("hold") || text.includes("long")) {
+                            summary += "They mentioned issues with wait times or delays. ";
+                        }
+                        if (topics.length > 0) {
+                            summary += `The main concerns were related to ${topics.join(" and ")}. `;
+                        }
+                        summary += "The customer requested resolution and may have mentioned considering alternative providers.";
+                    }
+                    else {
+                        summary = "The customer had a neutral interaction regarding ";
+                        if (topics.length > 0) {
+                            summary += `${topics.join(" and ")}. `;
+                        } else {
+                            summary += "a service inquiry. ";
+                        }
+                        summary += "The conversation followed a standard customer service pattern without strong positive or negative emotions expressed.";
+                    }
+
+                    // Add conversation characteristics
+                    if (hasGreeting && hasFarewell) {
+                        summary += " The exchange included appropriate opening and closing remarks.";
+                    }
+
+                    if (hasQuestions) {
+                        summary += " Several questions were asked and addressed during the conversation.";
+                    }
+
+                    return summary;
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

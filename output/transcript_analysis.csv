@@ -1,0 +1,37 @@
+Timestamp,Transcript,Summary,Sentiment
+2025-09-17 15:07:18,"Customer: Hello, I'm calling to check on my account balance and payment due date.
+
+Agent: Thank you for calling. I can help you with that. Can I have your account number please?
+
+Customer: Sure, it's 456789-123.
+
+Agent: Thank you. I see your current balance is $124.50 and your payment is due on the 15th of this month.
+
+Customer: Okay, and when was my last payment processed?
+
+Agent: Your last payment of $120 was processed on the 12th of last month. Would you like me to email you a statement summary?
+
+Customer: Yes, that would be helpful. Also, can you tell me if my autopay is still set up correctly?
+
+Agent: Let me check... Yes, your autopay is active and scheduled to process on the 14th. Is there anything else you'd like to know?
+
+Customer: No, that answers all my questions. Thank you for your help.
+
+Agent: You're welcome. The email has been sent. Have a good day.","The customer called to check account balance, payment due date, last payment, autopay status, and requested a statement summary. The agent provided all requested information, confirmed autopay is active, and sent the statement via email.",positive
+2025-09-17 15:09:49,"Customer: I need to speak to a manager immediately! This is completely unacceptable.
+
+Agent: I'm sorry you're having issues. Can you tell me what's going on?
+
+Customer: I've been on hold for 45 minutes! And now that I finally get through, my issue still isn't resolved. I was promised a delivery yesterday and it never showed up.
+
+Agent: I apologize for the wait and the delayed delivery. Let me check your order status. Can I get your order number?
+
+Customer: It's ORD-789123. This is the third time this has happened. Every time I order something, there's a problem. Your company's service has gone downhill dramatically.
+
+Agent: I see the issue here. There was a processing delay at our warehouse. I can expedite this for you now.
+
+Customer: That's what you said last time! I want a discount or I'm canceling my entire order and going to your competitor. This is ridiculous.
+
+Agent: I understand your frustration. Let me see what I can do to make this right for you.
+
+Customer: You better, because I'm not hanging up until this is completely resolved.","The customer is extremely frustrated after waiting 45 minutes on hold and experiencing a third missed delivery, demanding a manager and threatening to cancel the order unless a discount is provided. The agent acknowledges the warehouse delay and offers to expedite the shipment while trying to appease the customer.",negative
